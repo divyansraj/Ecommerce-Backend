@@ -1,0 +1,95 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: T-Shirts Backend API
+  description: API documentation for managing T-shirts
+basePath: /api/v1
+tags:
+  - name: tshirts
+    description: Operations related to T-shirts
+schemes:
+  - http
+paths:
+  /tshirts:
+    post:
+      tags:
+        - tshirts
+      summary: Create a new T-shirt
+      description: Create a new T-shirt entry
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: tshirt
+          description: T-shirt object
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Cool T-shirt"
+              size:
+                type: string
+                example: "L"
+              color:
+                type: string
+                example: "blue"
+              price:
+                type: number
+                example: 19.99
+      responses:
+        "200":
+          description: Successfully created a new T-shirt
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "1"
+              name:
+                type: string
+                example: "Cool T-shirt"
+              size:
+                type: string
+                example: "L"
+              color:
+                type: string
+                example: "blue"
+              price:
+                type: number
+                example: 19.99
+    get:
+      tags:
+        - tshirts
+      summary: Get all T-shirts
+      description: Returns all T-shirts available
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Tshirt"
+definitions:
+  Tshirt:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "1"
+      name:
+        type: string
+        example: "Cool T-shirt"
+      size:
+        type: string
+        example: "L"
+      color:
+        type: string
+        example: "blue"
+      price:
+        type: number
+        example: 19.99
