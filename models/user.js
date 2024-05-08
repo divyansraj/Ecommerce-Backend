@@ -82,12 +82,12 @@ userSchema.methods.getforgotPasswordToken = function (){
   const forgotPassword = jwt.sign(
     { id: this._id, email: this.email },
     process.env.JWT_SECRETKEY,
-    { expiresIn: "20m" }
+    { expiresIn: "30m" }
   );
 
   // Set the generated token to the user's forgotPasswordToken field
   this.forgotPasswordToken = forgotPassword;
-  this.forgotPasswordExpiry=Date.now() +20*60*1000;
+  this.forgotPasswordExpiry=Date.now() +30*60*1000;
   // Return the generated token
   return forgotPassword;
 }

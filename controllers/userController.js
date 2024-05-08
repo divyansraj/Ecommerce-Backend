@@ -22,7 +22,7 @@ exports.signup = async (req, res, next) => {
       width: 150,
       crop: "scale",
     });
-
+    User.fi
     const user = await User.create({
       name,
       email,
@@ -78,7 +78,7 @@ exports.logout = async (req, res, next) => {
   });
 };
 
-exports.resetPasswords = async (req,res,next) => {
+exports.forgotPassword = async (req,res,next) => {
   try {
     const { email } = req.body;
 
@@ -95,7 +95,7 @@ exports.resetPasswords = async (req,res,next) => {
     
     user.save({validateBeforeSave: false});
 
-    const url = `${req.protocol}://${req.get("host")}/password/reset/${forgotToken}`
+    const url = `${req.protocol}://${req.get("host")}/api/v2/password/reset/${forgotToken}`
 
     const text=`Copy the url and paste in the url bar \n\n ${url}
     `
@@ -126,3 +126,36 @@ exports.resetPasswords = async (req,res,next) => {
     res.send(error);
   }
 };
+
+exports.resetPassword = async(req,res,next) => {
+  try{
+    const resetToken = req.params.token
+    const user = await User.findOne({
+      forgotPasswordToken: resetToken,
+      forgotPasswordExpiry: {$gt: Date.now()}
+    });
+    if (!user) {
+      return next(Error("Token is expired"));
+    }
+
+    if (req.body.password !== req.body.confirmPassword) {
+      return next(Error("Please enter the same password for both the fields."));
+    }
+
+    user.password = req.body.password;
+
+    user.forgotPasswordToken=undefined;
+    user.forgotPasswordExpiry=undefined;
+
+    await user.save();
+
+   res.status(200).send("Successfully Changed the Password")
+
+  }
+  catch(error){
+    console.log(error);
+    res.send(error);
+  }
+  
+}
+
