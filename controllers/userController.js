@@ -157,5 +157,166 @@ exports.resetPassword = async(req,res,next) => {
     res.send(error);
   }
   
+};
+exports.userDetails =async(req,res,next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.status(200).json({
+      success:true,
+      user
+    })
+  }
+  
+  catch(error){
+    res.send(error);
+    console.log(error)
+  }
+};
+
+exports.changePassword = async(req,res,next) => {
+  try {
+    
+  const userId = req.user.id;
+  const user = await User.findById(userId).select("+password");
+
+  const isPasswordCorrect = await user.isValidatedPassword(
+    req.body.oldPassword
+  );
+
+  if (!isPasswordCorrect) {
+    return next(Error("Please enter the correct oldPassword"));
+  }
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(Error("Your Password and confirmPassword is not same"));
+  }
+
+  user.password = req.body.password;
+  await user.save();
+
+  cookieToken(user, res);
+  }
+  catch(error){
+    console.log(error);
+    res.send(error);
+  }
+};
+
+exports.updateuserDetails= async(req,res,next) => {
+  try{
+    
+    if (!req.body.name && !req.body.email) {
+      return next(Error("please enter the fields to update"));
+    }
+    const newData= {
+      name: req.body.name,
+      email:req.body.email
+    }
+     if (req.files) {
+      const user = await User.findById(req.user.id);
+       const oldimage = user.photo.id;
+       const deletePhoto = await cloudinary.v2.uploader.destroy(oldimage);
+
+      const result = await cloudinary.v2.uploader.upload(
+         req.files.photo.tempFilePath,
+         {
+           folder: "users",
+           width: 150,
+           crop: "scale",
+         }
+       );
+
+       newData.photo = {
+         id: result.public_id,
+         secure_url: result.secure_url,
+       };
+     }
+
+     
+
+      const user = await User.findByIdAndUpdate(req.user.id, newData, {
+       //optional parameters
+       new: true,
+       runValidators: true,
+       useFindAndModify: false, // not mandatory as default this if false
+     });
+     res.status(200).json({
+       success: true,
+       user,
+     });
+  }
+  catch(error){
+    console.log(error);
+    res.send(error);
+  }
 }
 
+exports.adminUsers=async(req,res,next) => {
+  try{
+    const users = await User.find();
+    res.status(200).json({
+      success: true,
+      users,
+    });
+    console.log(users)
+  }
+  catch(error){
+    console.log(error);
+    res.send(error);
+  }
+  
+}
+
+exports.managerUsers = async(req,res,next) => {
+  try{
+     const users = await User.find({ role: "user" });
+
+     res.status(200).json({
+       success: true,
+       users,
+     });
+  }
+
+  catch(error){
+    console.log(error);
+    res.send(error);
+  }
+ 
+}
+
+exports.getOneUser= async(req,res,next) => {
+  try{
+    const user = await User.findById(req.params.id);
+    if(!user){
+      return next(Error("No user found"));
+    }
+    res.status(200).json({
+      success:true,
+      user
+    })
+  }
+  catch(error){
+    console.log(error)
+    res.send(error);
+  }
+}
+
+exports.updateOneUserdetails= async(req,res,next) => {
+  const newData= {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  }
+
+  const user = await User.findByIdAndUpdate(req.params.id, newData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  if(!user){
+    return next(Error("No user Found"))
+  }
+  res.status(200).json({
+    success: true,
+    user
+  })
+}

@@ -1,4 +1,4 @@
-const express= require('express');
+const express = require("express");
 const router = express.Router();
 
 const {
@@ -6,13 +6,33 @@ const {
   login,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  userDetails,
+  changePassword,
+  updateuserDetails,
+  adminUsers,
+  managerUsers,
+  getOneUser,
+  updateOneUserdetails,
 } = require("../controllers/userController");
+const { isloggedin, customRoles } = require("../middlewares/user");
 
 router.route("/signup").post(signup);
 router.route("/login").post(login);
 router.route("/logout").get(logout);
 router.route("/forgotPassword").post(forgotPassword);
 router.route("/password/reset/:token").post(resetPassword);
+router.route("/userdashboard").get(isloggedin, userDetails);
+router.route("/password/update").post(isloggedin, changePassword);
+router.route("/userdashboard/update").post(isloggedin, updateuserDetails);
 
-module.exports = router
+router.route("/admin/users").get(isloggedin, customRoles("admin"), adminUsers);
+router
+  .route("/admin/user/:id")
+  .get(isloggedin, customRoles("admin"), getOneUser)
+  .put(isloggedin, customRoles("admin"), updateOneUserdetails);
+router
+  .route("/manager/users")
+  .get(isloggedin, customRoles("manager"), managerUsers);
+
+module.exports = router;
