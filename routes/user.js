@@ -14,6 +14,7 @@ const {
   managerUsers,
   getOneUser,
   updateOneUserdetails,
+  deleteUser
 } = require("../controllers/userController");
 const { isloggedin, customRoles } = require("../middlewares/user");
 
@@ -30,7 +31,8 @@ router.route("/admin/users").get(isloggedin, customRoles("admin"), adminUsers);
 router
   .route("/admin/user/:id")
   .get(isloggedin, customRoles("admin"), getOneUser)
-  .put(isloggedin, customRoles("admin"), updateOneUserdetails);
+  .put(isloggedin, customRoles("admin"), updateOneUserdetails)
+  .delete(isloggedin, customRoles("admin"),deleteUser);
 router
   .route("/manager/users")
   .get(isloggedin, customRoles("manager"), managerUsers);

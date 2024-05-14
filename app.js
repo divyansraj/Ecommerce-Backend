@@ -31,11 +31,15 @@ app.use(morgan("tiny"));
 
 const home = require("./routes/home");
 const user = require("./routes/user");
+const product = require("./routes/product");
 
+//router middleware
 app.use('/api/v2',home);
 app.use('/api/v2',user);
+app.use('/api/v2',product);
 app.use('/post',(req,res) => {
     res.render("postform")
 })
 
+//export app.js
 module.exports = app;
