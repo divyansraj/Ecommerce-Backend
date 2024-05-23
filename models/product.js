@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema({
       "Please select category from short-sleeves, long-sleeves, sweat-shirts and hoodies",
     ],
     enum: {
-      values: ["short-sleeves", "long-sleeves", "sweat-shirts", "hoodies"],
+      values: ["shortsleeves", "longsleeves", "sweatshirts", "hoodies"],
       message:
         "Please select category Only from short-sleeves, long-sleeves, sweat-shirts and hoodies ",
     },
@@ -74,7 +74,7 @@ const productSchema = new mongoose.Schema({
     }
   ],
   user: {
-    type: mongoose.Schema,ObjectId,
+    type: mongoose.Schema.ObjectId,
     ref : "User", //same as that you have exported in the user model
     required: true,
   },
