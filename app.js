@@ -1,6 +1,19 @@
 const express = require("express");
 require("dotenv").config();
+const helmet = require("helmet"); // Helmet helps you secure your Express apps by setting various HTTP headers.
+
 const app = express();
+
+// Use Helmet with CSP middleware
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'none'"],
+      fontSrc: ["'self'", "data:"], // Allow fonts to be loaded from the same origin and data URIs
+      // Add other directives as needed
+    },
+  })
+);
 
 const morgan = require("morgan");
 const cookieParser= require("cookie-parser");
