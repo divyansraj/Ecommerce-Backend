@@ -14,6 +14,7 @@ cloudinary.config({
 
 const PORT = process.env.PORT;
 
-app.listen(PORT, () => {
-  console.log(`Server is running successfully at Port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server is running successfully at Port ${PORT}`);
+// });
+module.exports = app; // Export Express app for serverless environments
