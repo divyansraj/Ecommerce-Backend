@@ -16,43 +16,45 @@ app.use(
 );
 
 const morgan = require("morgan");
-const cookieParser= require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
+const fs = require("fs");
+const path = require("path");
 
-//for swagger documentation
-// const swaggerUi= require("swagger-ui-express");
-// const YAML = require("yamljs");
-// const swaggerDocument = YAML.load("./swagger.yaml");
-// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.set("view engine", "ejs");
+// Ensure the temp directory exists
+const tempDir = path.join(process.cwd(), "tmp");
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
-//regular middlewares
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
+// Regular middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-//cookie and file middlewares
+// Cookie and file middlewares
 app.use(cookieParser());
-app.use(fileUpload({
-    useTempFiles:true,
-    tempFileDir:"/temp/",
-}));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: tempDir,
+  })
+);
 
-//morgan middleware
+// Morgan middleware
 app.use(morgan("tiny"));
 
-// importing all the routes here
-
+// Importing all the routes here
 const home = require("./routes/home");
 const user = require("./routes/user");
 const product = require("./routes/product");
 
-//router middleware
-app.use('/api/v2',home);
-app.use('/api/v2',user);
-app.use('/api/v2',product);
-app.use('/post',(req,res) => {
-    res.render("postform")
-})
+// Router middleware
+app.use("/api/v2", home);
+app.use("/api/v2", user);
+app.use("/api/v2", product);
+app.use("/post", (req, res) => {
+  res.render("postform");
+});
 
-//export app.js
+// Export app.js
 module.exports = app;
