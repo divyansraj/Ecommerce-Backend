@@ -7,10 +7,10 @@ const cookieParser= require("cookie-parser");
 const fileUpload = require("express-fileupload");
 
 //for swagger documentation
-const swaggerUi= require("swagger-ui-express");
-const YAML = require("yamljs");
-const swaggerDocument = YAML.load("./swagger.yaml");
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// const swaggerUi= require("swagger-ui-express");
+// const YAML = require("yamljs");
+// const swaggerDocument = YAML.load("./swagger.yaml");
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.set("view engine", "ejs");
 
 //regular middlewares
