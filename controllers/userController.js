@@ -82,24 +82,24 @@ exports.forgotPassword = async (req, res, next) => {
     const { email } = req.body;
 
     if (!email) {
-      return next(Error("Please send Email"));
+      return res.status(400).json({ message: "Please send Email" });
     }
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email });
     if (!user) {
-      return next(Error("User is not registered"));
+      return res.status(404).json({ message: "User is not registered" });
     }
 
-    const forgotToken = await user.getforgotPasswordToken();
+    const forgotToken = user.getforgotPasswordToken();
 
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     const url = `${req.protocol}://${req.get(
       "host"
     )}/api/v2/password/reset/${forgotToken}`;
 
-    const text = `Copy the url and paste in the url bar \n\n ${url}
-    `;
+    const text = `Copy the URL and paste in the URL bar \n\n ${url}`;
+
     try {
       await mailHelper({
         email: user.email,
@@ -108,23 +108,24 @@ exports.forgotPassword = async (req, res, next) => {
       });
       res.status(200).json({
         success: true,
-        message: "email is sent successfully",
+        message: "Email is sent successfully",
       });
     } catch (error) {
       user.forgotPasswordToken = undefined;
       user.forgotPasswordExpiry = undefined;
-      user.save({ validateBeforeSave: false });
+      await user.save({ validateBeforeSave: false });
 
-      return next(Error(error.message, 500));
+      return res
+        .status(500)
+        .json({ message: "Email could not be sent", error: error.message });
     }
-
-    console.log(user);
   } catch (error) {
-    console.log(error);
-    res.send(error);
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
-
 exports.resetPassword = async (req, res, next) => {
   try {
     const resetToken = req.params.token;
