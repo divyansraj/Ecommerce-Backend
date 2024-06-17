@@ -1,10 +1,10 @@
-const path = require("path");
 const express = require("express");
 require("dotenv").config();
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
+const path = require("path");
 
 const app = express();
 
@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: path.resolve(__dirname, "tmp"), // Use 'tmp' instead of 'temp'
+    tempFileDir: path.join("/tmp"), // Use the writable directory provided by the platform
   })
 );
 

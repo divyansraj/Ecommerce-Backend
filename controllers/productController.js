@@ -156,22 +156,19 @@ exports.adminDeleteOneProduct = async (req, res, next) => {
     if (!product) {
       return next(Error("Product not found by this ID"));
     }
-    console.log("Product photos - ",product.photos.length)
+    console.log("Product photos - ", product.photos.length);
     //delete the product photos from cloudinary
     for (let i = 0; i < product.photos.length; i++) {
-        const files = await cloudinary.v2.uploader.destroy(
-          product.photos[i].id
-        );
-      }
-      //delete thw whole product object
-      product = await Product.findByIdAndDelete(req.params.id);
-
-      res.status(200).json({
-        success: true,
-        product,
-      });
+      const files = await cloudinary.v2.uploader.destroy(product.photos[i].id);
     }
-   catch (error) {
+    //delete thw whole product object
+    product = await Product.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
     console.log(error);
     res.status(400).send(error);
   }
